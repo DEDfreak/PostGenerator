@@ -1,0 +1,3 @@
+Flask
+Flask-Cors
+# Add any other dependencies you need (e.g., OpenAI, Langchain, etc.)
