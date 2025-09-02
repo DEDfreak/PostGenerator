@@ -12,8 +12,11 @@ function App() {
     setLoading(true);
     setError(null);
 
+    // Load the base url from .env
+    const baseUrl = process.env.REACT_APP_API_URL;
+    console.log(baseUrl);
     try {
-      const response = await fetch('http://127.0.0.1:5000/api/generate', { 
+      const response = await fetch(baseUrl, { 
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
