@@ -12,11 +12,12 @@ import re
 app = Flask(__name__)
 
 # Configure CORS properly - Allow all origins for Vercel deployment
-CORS(app, 
-     origins="*",  # Allow all origins
-     methods=["GET", "POST", "OPTIONS"],
-     allow_headers=["Content-Type", "Authorization"]
-)
+# CORS(app, 
+#      origins="*",  # Allow all origins
+#      methods=["GET", "POST", "OPTIONS"],
+#      allow_headers=["Content-Type", "Authorization"]
+# )
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 load_dotenv()
 
@@ -132,18 +133,11 @@ def home():
 def health_check():
     return "OK", 200
 
-@app.route('/api/analyze-topic', methods=['POST', 'OPTIONS'])
+@app.route('/api/analyze-topic', methods=['POST'])
 def analyze_topic():
     """Stage 1: Analyze topic and suggest dynamic input fields"""
     print("=== TOPIC ANALYSIS ENDPOINT CALLED ===")
     
-    # Handle preflight OPTIONS request
-    if request.method == 'OPTIONS':
-        response = jsonify({'status': 'OK'})
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-        response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
-        return response
     
     try:
         data = request.get_json()
@@ -247,15 +241,9 @@ def analyze_topic():
         print(f"Error in topic analysis: {str(e)}")
         return jsonify({'error': f'Topic analysis failed: {str(e)}'}), 500
 
-@app.route('/api/generate', methods=['POST', 'OPTIONS'])
+@app.route('/api/generate', methods=['POST'])
 def generate_posts():
-    # Handle preflight OPTIONS request
-    if request.method == 'OPTIONS':
-        response = jsonify({'status': 'OK'})
-        response.headers.add('Access-Control-Allow-Origin', '*')
-        response.headers.add('Access-Control-Allow-Headers', 'Content-Type,Authorization')
-        response.headers.add('Access-Control-Allow-Methods', 'GET,POST,OPTIONS')
-        return response
+
     data = request.get_json()
     topic = data['topic']
     options = data['options']
