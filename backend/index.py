@@ -48,6 +48,10 @@ prompt = PromptTemplate(
 chain = prompt | llm
 
 
+@app.route('/', methods=['GET'])
+def home():
+    return "Flask Backend is Running!", 200
+
 @app.route('/health', methods=['GET'])
 def health_check():
     return "OK", 200
@@ -87,5 +91,5 @@ def generate_posts():
         return jsonify({'error': str(e)}), 500 #Return an error message
 
 
-if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+# For Vercel, we don't need the if __name__ == '__main__' block
+# The app is imported directly
