@@ -116,17 +116,67 @@ function App() {
 
   return (
     <div className="App">
-      <h1>LinkedIn Post Generator</h1>
-      <InputForm 
-        onGenerate={generatePosts}
-        onAnalyzeTopic={analyzeTopic}
-        suggestedFields={suggestedFields}
-        analyzingTopic={analyzingTopic}
-      />
-      {loading && <p>Generating posts...</p>}
-      {analyzingTopic && <p>Analyzing topic for personalization...</p>}
-      {error && <p className="error">Error: {error}</p>}
-      <PostDisplay posts={posts} />
+      <header className="app-header">
+        <h1>LinkedIn Post Generator</h1>
+        <p>Create engaging LinkedIn posts with AI assistance</p>
+      </header>
+      
+      <main className="app-main">
+        {/* Left Console - Input Area */}
+        <div className="left-console">
+          <div className="console-header">
+            <h2>📝 Input Console</h2>
+          </div>
+          <InputForm 
+            onGenerate={generatePosts}
+            onAnalyzeTopic={analyzeTopic}
+            suggestedFields={suggestedFields}
+            analyzingTopic={analyzingTopic}
+          />
+          
+          {/* Status Messages */}
+          <div className="status-section">
+            {loading && (
+              <div className="status-message loading">
+                <div className="spinner"></div>
+                <span>Generating posts...</span>
+              </div>
+            )}
+            {analyzingTopic && (
+              <div className="status-message analyzing">
+                <div className="spinner"></div>
+                <span>Analyzing topic for personalization...</span>
+              </div>
+            )}
+            {error && (
+              <div className="status-message error">
+                <span>⚠️ {error}</span>
+              </div>
+            )}
+          </div>
+        </div>
+        
+        {/* Right Results - Output Area */}
+        <div className="right-results">
+          <div className="results-header">
+            <h2>✨ Generated Posts</h2>
+            {posts.length > 0 && (
+              <span className="posts-count">{posts.length} posts generated</span>
+            )}
+          </div>
+          <div className="results-content">
+            {posts.length === 0 ? (
+              <div className="empty-state">
+                <div className="empty-icon">📄</div>
+                <h3>No posts generated yet</h3>
+                <p>Enter a topic in the console and click generate to see your LinkedIn posts here.</p>
+              </div>
+            ) : (
+              <PostDisplay posts={posts} />
+            )}
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
