@@ -1,3 +1,5 @@
 Flask
 Flask-Cors
-# Add any other dependencies you need (e.g., OpenAI, Langchain, etc.)
+langchain
+google-generativeai
+python-dotenv # For loading API key from .env file
