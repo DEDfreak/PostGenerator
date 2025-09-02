@@ -407,12 +407,34 @@ body {
   padding: 20px;
 }
 
-.post-content p {
-  line-height: 1.6;
+.post-content .post-paragraph {
+  line-height: 1.7;
   color: #444;
-  margin: 0;
-  white-space: pre-wrap;
+  margin-bottom: 16px;
   font-size: 15px;
+}
+
+.post-content .post-paragraph:last-child {
+  margin-bottom: 0;
+}
+
+/* Hashtag styling */
+.hashtag {
+  color: #0073b1;
+  font-weight: 600;
+  background: rgba(0, 115, 177, 0.1);
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin: 0 2px;
+  font-size: 0.95em;
+  border: 1px solid rgba(0, 115, 177, 0.2);
+  transition: all 0.3s ease;
+}
+
+.hashtag:hover {
+  background: rgba(0, 115, 177, 0.15);
+  transform: translateY(-1px);
+  cursor: pointer;
 }
 
 .post-actions {

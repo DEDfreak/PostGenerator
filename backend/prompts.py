@@ -40,14 +40,23 @@ Tone: {tone}
 Post Length: {post_length}
 Include these hashtags: {hashtags}
 
-Please format your response as follows - each post should be separated by "---":
-POST 1: [write the first post here]
----
-POST 2: [write the second post here]
----
-POST 3: [write the third post here]
+IMPORTANT FORMATTING RULES:
+- Structure each post with multiple paragraphs for better readability
+- Use line breaks to separate different thoughts or ideas
+- Start with an engaging hook
+- Include specific details and examples
+- End with a call to action or question
+- Place hashtags at the end, separated by spaces
+- Use emojis strategically to break up text and add visual appeal
 
-Make sure each post is complete and ready to publish on LinkedIn.
+Please format your response as follows - each post should be separated by "---":
+POST 1: [write the first well-formatted post here with proper paragraph breaks]
+---
+POST 2: [write the second well-formatted post here with proper paragraph breaks]
+---
+POST 3: [write the third well-formatted post here with proper paragraph breaks]
+
+Make sure each post is complete, well-structured, and ready to publish on LinkedIn.
 """
 
 # Stage 3: Enhanced Post Generation Template (with additional fields)
@@ -65,16 +74,27 @@ Basic Information:
 Additional Context:
 {enhanced_context}
 
-Use the additional context to make the posts more specific, authentic, and engaging. Incorporate the details naturally into compelling LinkedIn posts.
+IMPORTANT FORMATTING RULES:
+- Structure each post with multiple paragraphs for better readability
+- Use line breaks to separate different thoughts or ideas
+- Start with an engaging hook that grabs attention
+- Include specific details and examples from the additional context
+- Create a narrative flow between paragraphs
+- End with a call to action or thought-provoking question
+- Place hashtags at the end, separated by spaces
+- Use emojis strategically to break up text and add visual appeal
+- Make each paragraph 1-3 sentences max for easy reading
+
+Use the additional context to make the posts more specific, authentic, and engaging. Incorporate the details naturally into compelling, well-structured LinkedIn posts.
 
 Please format your response as follows - each post should be separated by "---":
-POST 1: [write the first personalized post here]
+POST 1: [write the first personalized, well-formatted post here with proper paragraph breaks]
 ---
-POST 2: [write the second personalized post here]  
+POST 2: [write the second personalized, well-formatted post here with proper paragraph breaks]  
 ---
-POST 3: [write the third personalized post here]
+POST 3: [write the third personalized, well-formatted post here with proper paragraph breaks]
 
-Make sure each post feels authentic and includes specific details from the additional context.
+Make sure each post feels authentic, is well-structured, and includes specific details from the additional context.
 """
 
 # Create PromptTemplate objects
