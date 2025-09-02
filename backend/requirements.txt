@@ -1,5 +1,4 @@
 Flask
 Flask-Cors
-langchain
 google-generativeai
-python-dotenv # For loading API key from .env file
+python-dotenv
