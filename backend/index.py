@@ -12,14 +12,12 @@ from langchain.chains import LLMChain
 
 app = Flask(__name__)
 
-# Configure CORS properly
-CORS(app, resources={
-    r"/api/*": {
-        "origins": ["http://localhost:3000", "http://localhost:3001", "http://127.0.0.1:3000", "http://127.0.0.1:3001", "https://post-generator-backend-three.vercel.app"],
-        "methods": ["GET", "POST", "OPTIONS"],
-        "allow_headers": ["Content-Type", "Authorization"]
-    }
-})
+# Configure CORS properly - Allow all origins for Vercel deployment
+CORS(app, 
+     origins="*",  # Allow all origins
+     methods=["GET", "POST", "OPTIONS"],
+     allow_headers=["Content-Type", "Authorization"]
+)
 
 load_dotenv()
 
