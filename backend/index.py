@@ -8,6 +8,7 @@ from langchain.chains import LLMChain
 import json
 import re
 from prompts import analysis_prompt, generation_prompt, enhanced_prompt
+import time
 
 app = Flask(__name__)
 
@@ -63,10 +64,14 @@ def analyze_topic():
         
         print("Sending analysis prompt to LangChain...")
         
-        # Call LangChain analysis chain
+        # Call LangChain analysis chain with timing
+        start_time = time.time()
         response = analysis_chain.invoke({"topic": topic})
+        analysis_time = time.time() - start_time
+        
         raw_response = response.content.strip()
         print(f"Raw LangChain response: {raw_response}")
+        print(f"Analysis took {analysis_time:.2f} seconds")
         
         # Clean and parse the JSON response
         try:
@@ -106,7 +111,12 @@ def analyze_topic():
             
             return jsonify({
                 'suggested_fields': validated_fields,
-                'topic': topic
+                'topic': topic,
+                'metrics': {
+                    'analysis_time': round(analysis_time, 2),
+                    'estimated_tokens': len(raw_response.split()),
+                    'estimated_cost': round(len(raw_response.split()) * 0.0001, 4)  # Rough estimate
+                }
             })
             
         except json.JSONDecodeError as e:
@@ -123,7 +133,12 @@ def analyze_topic():
             return jsonify({
                 'suggested_fields': fallback_fields,
                 'topic': topic,
-                'note': 'Using fallback fields due to parsing issues'
+                'note': 'Using fallback fields due to parsing issues',
+                'metrics': {
+                    'analysis_time': round(analysis_time, 2),
+                    'estimated_tokens': len(clean_response.split()),
+                    'estimated_cost': round(len(clean_response.split()) * 0.0001, 4)
+                }
             })
         
     except Exception as e:
@@ -142,14 +157,16 @@ def generate_posts():
     hashtags = options.get('hashtags', '#linkedin #socialmedia')
     print(f"Generating posts for topic: {topic}, tone: {tone}, post_length: {post_length}, hashtags: {hashtags}")
     try:
-        # Run the generation LLMChain
+        # Run the generation LLMChain with timing
         print("Using generation_chain for basic post generation...")
+        start_time = time.time()
         result = generation_chain.invoke({
             "topic": topic,
             "tone": tone,
             "post_length": post_length,
             "hashtags": hashtags
         })
+        generation_time = time.time() - start_time
 
         # Parse the AI response to extract clean posts
         generated_text = result.content
@@ -179,7 +196,20 @@ def generate_posts():
             posts.append(f"Here's a professional post about {topic} with a {tone} tone. {hashtags}")
         
         print(f"Cleaned posts: {posts}")
-        return jsonify({'posts': posts})
+        
+        # Calculate metrics
+        total_tokens = len(generated_text.split())
+        estimated_cost = round(total_tokens * 0.0001, 4)
+        
+        return jsonify({
+            'posts': posts,
+            'metrics': {
+                'generation_time': round(generation_time, 2),
+                'total_tokens': total_tokens,
+                'estimated_cost': estimated_cost,
+                'posts_generated': len(posts)
+            }
+        })
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500 #Return an error message
@@ -220,6 +250,7 @@ def generate_enhanced_posts():
         print(f"Enhanced context: {enhanced_context}")
         
         # Use enhanced chain if we have additional context, otherwise use basic generation
+        start_time = time.time()
         if enhanced_context_parts:
             print("Using enhanced_chain for personalized post generation...")
             result = enhanced_chain.invoke({
@@ -237,6 +268,7 @@ def generate_enhanced_posts():
                 "post_length": post_length,
                 "hashtags": hashtags
             })
+        generation_time = time.time() - start_time
         
         # Parse the AI response to extract clean posts (same logic as basic generation)
         generated_text = result.content
@@ -266,10 +298,22 @@ def generate_enhanced_posts():
             posts.append(f"Here's a professional post about {topic} with a {tone} tone. {hashtags}")
         
         print(f"Final enhanced posts: {posts}")
+        
+        # Calculate metrics
+        total_tokens = len(generated_text.split())
+        estimated_cost = round(total_tokens * 0.0001, 4)
+        
         return jsonify({
             'posts': posts,
             'enhanced': bool(enhanced_context_parts),
-            'context_used': enhanced_context
+            'context_used': enhanced_context,
+            'metrics': {
+                'generation_time': round(generation_time, 2),
+                'total_tokens': total_tokens,
+                'estimated_cost': estimated_cost,
+                'posts_generated': len(posts),
+                'enhanced_fields_used': len(enhanced_context_parts)
+            }
         })
         
     except Exception as e:

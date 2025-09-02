@@ -191,7 +191,7 @@ function InputForm({ onGenerate, onAnalyzeTopic, suggestedFields, analyzingTopic
                     id={field.field}
                     value={enhancedFields[field.field] || ''}
                     onChange={(e) => handleEnhancedFieldChange(field.field, e.target.value)}
-                    placeholder={field.description || `Enter ${field.label.toLowerCase()}`}
+                    // placeholder={field.description || `Enter ${field.label.toLowerCase()}`}
                     rows="3"
                   />
                 ) : field.type === 'number' ? (
@@ -200,7 +200,7 @@ function InputForm({ onGenerate, onAnalyzeTopic, suggestedFields, analyzingTopic
                     id={field.field}
                     value={enhancedFields[field.field] || ''}
                     onChange={(e) => handleEnhancedFieldChange(field.field, e.target.value)}
-                    placeholder={field.description || `Enter ${field.label.toLowerCase()}`}
+                    // placeholder={field.description || `Enter ${field.label.toLowerCase()}`}
                   />
                 ) : (
                   <input
@@ -208,7 +208,7 @@ function InputForm({ onGenerate, onAnalyzeTopic, suggestedFields, analyzingTopic
                     id={field.field}
                     value={enhancedFields[field.field] || ''}
                     onChange={(e) => handleEnhancedFieldChange(field.field, e.target.value)}
-                    placeholder={field.description || `Enter ${field.label.toLowerCase()}`}
+                    // placeholder={field.description || `Enter ${field.label.toLowerCase()}`}
                   />
                 )}
               </div>

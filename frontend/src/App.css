@@ -103,12 +103,33 @@ body {
   margin: 0;
 }
 
+.header-info {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+}
+
 .posts-count {
   background: rgba(255, 255, 255, 0.2);
   padding: 5px 12px;
   border-radius: 20px;
   font-size: 0.9rem;
   font-weight: 500;
+}
+
+.metrics-summary {
+  display: flex;
+  gap: 12px;
+  font-size: 0.85rem;
+}
+
+.metric {
+  background: rgba(255, 255, 255, 0.15);
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+  border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .results-content {
@@ -501,6 +522,15 @@ body {
     flex-direction: column;
     gap: 10px;
     text-align: center;
+  }
+  
+  .header-info {
+    align-items: center;
+  }
+  
+  .metrics-summary {
+    flex-wrap: wrap;
+    justify-content: center;
   }
 }
 

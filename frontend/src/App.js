@@ -9,6 +9,7 @@ function App() {
   const [error, setError] = useState(null);
   const [suggestedFields, setSuggestedFields] = useState([]);
   const [analyzingTopic, setAnalyzingTopic] = useState(false);
+  const [metrics, setMetrics] = useState(null);
 
   // Get API base URL from environment
   const getApiUrl = (endpoint) => {
@@ -101,6 +102,7 @@ function App() {
       console.log('Generation data:', data);
       
       setPosts(data.posts || []);
+      setMetrics(data.metrics || null);
       
       // Show success message if enhanced generation was used
       if (data.enhanced) {
@@ -160,9 +162,18 @@ function App() {
         <div className="right-results">
           <div className="results-header">
             <h2>✨ Generated Posts</h2>
-            {posts.length > 0 && (
-              <span className="posts-count">{posts.length} posts generated</span>
-            )}
+            <div className="header-info">
+              {posts.length > 0 && (
+                <span className="posts-count">{posts.length} posts generated</span>
+              )}
+              {metrics && (
+                <div className="metrics-summary">
+                  <span className="metric">⏱️ {metrics.generation_time}s</span>
+                  <span className="metric">🎯 {metrics.total_tokens} tokens</span>
+                  <span className="metric">💰 ${metrics.estimated_cost}</span>
+                </div>
+              )}
+            </div>
           </div>
           <div className="results-content">
             {posts.length === 0 ? (
