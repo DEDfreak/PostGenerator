@@ -32,11 +32,21 @@ llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", google_api_key=GOOGLE_API
 # Define the prompt template
 prompt_template = """
 You are a social media expert.
-Generate 3 LinkedIn post options about the following topic, making them engaging and professional.
+Generate exactly 3 LinkedIn post options about the following topic, making them engaging and professional.
+
 Topic: {topic}
 Tone: {tone}
 Post Length: {post_length}
-Hashtags: {hashtags}
+Include these hashtags: {hashtags}
+
+Please format your response as follows - each post should be separated by "---":
+POST 1: [write the first post here]
+---
+POST 2: [write the second post here]
+---
+POST 3: [write the third post here]
+
+Make sure each post is complete and ready to publish on LinkedIn.
 """
 
 prompt = PromptTemplate(
@@ -82,10 +92,35 @@ def generate_posts():
             "hashtags": hashtags
         })
 
-        generated_posts = result.content.split("\n\n")[:3]
-        print(f"Generated posts: {generated_posts}")
-
-        return jsonify({'posts': generated_posts})
+        # Parse the AI response to extract clean posts
+        generated_text = result.content
+        print(f"Raw AI response: {generated_text}")
+        
+        # Split by "---" to get individual posts
+        if "---" in generated_text:
+            raw_posts = generated_text.split("---")
+            posts = []
+            for post in raw_posts:
+                # Clean up each post
+                cleaned_post = post.strip()
+                # Remove "POST 1:", "POST 2:", etc. prefixes
+                if cleaned_post.startswith(("POST 1:", "POST 2:", "POST 3:")):
+                    cleaned_post = cleaned_post.split(":", 1)[1].strip()
+                # Remove any leading/trailing brackets
+                cleaned_post = cleaned_post.strip("[]")
+                if cleaned_post:  # Only add non-empty posts
+                    posts.append(cleaned_post)
+        else:
+            # Fallback: split by double newlines if no "---" found
+            posts = [post.strip() for post in generated_text.split("\n\n") if post.strip()]
+        
+        # Ensure we have exactly 3 posts
+        posts = posts[:3]  # Take only first 3
+        while len(posts) < 3:  # Add fallback posts if needed
+            posts.append(f"Here's a professional post about {topic} with a {tone} tone. {hashtags}")
+        
+        print(f"Cleaned posts: {posts}")
+        return jsonify({'posts': posts})
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500 #Return an error message
@@ -93,3 +128,6 @@ def generate_posts():
 
 # For Vercel, we don't need the if __name__ == '__main__' block
 # The app is imported directly
+
+if __name__ == '__main__':
+    app.run(debug=True, port=5000)
