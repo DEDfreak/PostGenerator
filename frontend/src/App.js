@@ -7,31 +7,108 @@ function App() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [suggestedFields, setSuggestedFields] = useState([]);
+  const [analyzingTopic, setAnalyzingTopic] = useState(false);
 
-  const generatePosts = async (topic, options) => {
-    setLoading(true);
-    setError(null);
-
-    // Load the base url from .env
+  // Get API base URL from environment
+  const getApiUrl = (endpoint) => {
     const baseUrl = process.env.REACT_APP_API_URL;
-    console.log(baseUrl);
+    if (baseUrl) {
+      // Remove /api/generate from the end if it exists and add the new endpoint
+      const cleanBaseUrl = baseUrl.replace('/api/generate', '');
+      return `${cleanBaseUrl}${endpoint}`;
+    }
+    return `http://localhost:5000${endpoint}`;
+  };
+
+  // Stage 1: Analyze topic and get suggested fields
+  const analyzeTopic = async (topic) => {
+    console.log('=== ANALYZING TOPIC ===');
+    console.log('Topic:', topic);
+    
+    setAnalyzingTopic(true);
+    setError(null);
+    setSuggestedFields([]);
+
     try {
-      const response = await fetch(baseUrl, { 
+      const response = await fetch(getApiUrl('/api/analyze-topic'), {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ topic, options }),
+        body: JSON.stringify({ topic }),
       });
 
+      console.log('Analysis response status:', response.status);
+
       if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+        throw new Error(`Analysis failed! Status: ${response.status}`);
       }
 
       const data = await response.json();
-      setPosts(data.posts); // Assuming the backend returns { posts: [...] }
+      console.log('Analysis data:', data);
+      
+      setSuggestedFields(data.suggested_fields || []);
+      return data.suggested_fields || [];
     } catch (err) {
-      setError(err.message);
+      console.error('Analysis error:', err);
+      setError(`Topic analysis failed: ${err.message}`);
+      return [];
+    } finally {
+      setAnalyzingTopic(false);
+    }
+  };
+
+  // Stage 2: Generate posts (basic or enhanced)
+  const generatePosts = async (topic, options, enhancedFields = {}) => {
+    console.log('=== GENERATING POSTS ===');
+    console.log('Topic:', topic);
+    console.log('Options:', options);
+    console.log('Enhanced fields:', enhancedFields);
+    
+    setLoading(true);
+    setError(null);
+
+    try {
+      // Check if we have enhanced fields to use the enhanced endpoint
+      const hasEnhancedFields = enhancedFields && Object.keys(enhancedFields).length > 0;
+      const endpoint = hasEnhancedFields ? '/api/generate-enhanced' : '/api/generate';
+      
+      console.log('Using endpoint:', endpoint);
+      console.log('Has enhanced fields:', hasEnhancedFields);
+
+      const requestBody = hasEnhancedFields 
+        ? { topic, options, enhanced_fields: enhancedFields }
+        : { topic, options };
+
+      console.log('Request body:', requestBody);
+
+      const response = await fetch(getApiUrl(endpoint), {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(requestBody),
+      });
+
+      console.log('Generation response status:', response.status);
+
+      if (!response.ok) {
+        throw new Error(`Generation failed! Status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      console.log('Generation data:', data);
+      
+      setPosts(data.posts || []);
+      
+      // Show success message if enhanced generation was used
+      if (data.enhanced) {
+        console.log('Enhanced generation used with context:', data.context_used);
+      }
+    } catch (err) {
+      console.error('Generation error:', err);
+      setError(`Post generation failed: ${err.message}`);
     } finally {
       setLoading(false);
     }
@@ -40,8 +117,14 @@ function App() {
   return (
     <div className="App">
       <h1>LinkedIn Post Generator</h1>
-      <InputForm onGenerate={generatePosts} />
+      <InputForm 
+        onGenerate={generatePosts}
+        onAnalyzeTopic={analyzeTopic}
+        suggestedFields={suggestedFields}
+        analyzingTopic={analyzingTopic}
+      />
       {loading && <p>Generating posts...</p>}
+      {analyzingTopic && <p>Analyzing topic for personalization...</p>}
       {error && <p className="error">Error: {error}</p>}
       <PostDisplay posts={posts} />
     </div>
