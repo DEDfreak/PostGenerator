@@ -9,6 +9,8 @@ import json
 import re
 from prompts import analysis_prompt, generation_prompt, enhanced_prompt
 import time
+from langchain_openai import ChatOpenAI
+from portkey_ai import Portkey
 
 app = Flask(__name__)
 
@@ -30,6 +32,14 @@ genai.configure(api_key=GOOGLE_API_KEY)
 llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", google_api_key=GOOGLE_API_KEY, temperature=0.7)
 
 
+llm = ChatOpenAI(
+    model="gpt-4o-mini",   # just a placeholder, real routing is handled by Portkey config
+    openai_api_key="wDu046PifCS5p3aSVR7Tk+pioMFz",
+    openai_api_base="https://api.portkey.ai/v1",
+    default_headers={
+        "x-portkey-config": "pc-post-c-40f634"  # replace with the ID/slug from Portkey dashboard
+    }
+)
 
 # Create LangChain chains for all operations
 print("Creating LangChain chains...")
